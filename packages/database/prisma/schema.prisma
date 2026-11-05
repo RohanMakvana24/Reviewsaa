@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Billing and Google Business Profile models arrive in later phases.
+model SystemMetadata {
+  key       String   @id @db.VarChar(191)
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+enum PlatformRole {
+  OWNER
+  SUPER_ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum OrganizationStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model User {
+  id                  String                     @id @default(cuid()) @db.VarChar(191)
+  googleSubject       String                     @unique @db.VarChar(191)
+  email               String                     @db.VarChar(320)
+  name                String                     @db.VarChar(100)
+  role                PlatformRole               @default(OWNER)
+  status              AccountStatus              @default(ACTIVE)
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime                   @updatedAt
+  memberships         Membership[]
+  sessions            Session[]
+  businessConnections GoogleBusinessConnection[]
+
+  @@index([email])
+}
+
+model Organization {
+  id             String                    @id @default(cuid()) @db.VarChar(191)
+  name           String                    @db.VarChar(100)
+  status         OrganizationStatus        @default(ACTIVE)
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+  memberships    Membership[]
+  onboarding     BusinessOnboarding?
+  googleBusiness GoogleBusinessConnection?
+}
+
+model Membership {
+  id             String       @id @default(cuid()) @db.VarChar(191)
+  organizationId String       @db.VarChar(191)
+  userId         String       @db.VarChar(191)
+  // MVP memberships are Owner only. Platform admin is a separate user role.
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid()) @db.VarChar(191)
+  tokenHash String   @unique @db.Char(64)
+  csrfToken String   @db.VarChar(64)
+  userId    String   @db.VarChar(191)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([userId])
+}
+
+model OAuthAttempt {
+  stateHash   String   @id @db.Char(64)
+  browserHash String   @db.Char(64)
+  verifier    String   @db.VarChar(128)
+  nonce       String   @db.VarChar(64)
+  expiresAt   DateTime
+
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id             String   @id @default(cuid()) @db.VarChar(191)
+  actorUserId    String?  @db.VarChar(191)
+  organizationId String?  @db.VarChar(191)
+  action         String   @db.VarChar(100)
+  targetId       String?  @db.VarChar(191)
+  requestId      String   @db.VarChar(64)
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+// No FK to User/Organization: retain eligibility claims if an account/workspace
+// is deleted. Future deletion workflows must not silently restore trial access.
+model TrialGrant {
+  id                String   @id @default(cuid()) @db.VarChar(191)
+  organizationId    String   @unique @db.VarChar(191)
+  googleSubjectHash String   @unique @db.Char(64)
+  emailHash         String   @unique @db.Char(64)
+  startedAt         DateTime
+  expiresAt         DateTime
+  allowance         Int
+  used              Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  @@index([expiresAt])
+}
+
+model TrialUsageReservation {
+  id             String   @id @default(cuid()) @db.VarChar(191)
+  organizationId String   @db.VarChar(191)
+  actorUserId    String   @db.VarChar(191)
+  idempotencyKey String   @db.VarChar(80)
+  createdAt      DateTime @default(now())
+
+  @@unique([organizationId, idempotencyKey])
+}
+
+model BusinessOnboarding {
+  organizationId  String       @id @db.VarChar(191)
+  category        String?      @db.VarChar(100)
+  city            String?      @db.VarChar(100)
+  phone           String?      @db.VarChar(30)
+  businessSavedAt DateTime?
+  greeting        String?      @db.VarChar(160)
+  accentColor     String?      @db.VarChar(7)
+  qrSavedAt       DateTime?
+  updatedAt       DateTime     @updatedAt
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model ContactInquiry {
+  id        String   @id @default(cuid()) @db.VarChar(191)
+  name      String   @db.VarChar(100)
+  email     String   @db.VarChar(320)
+  business  String   @db.VarChar(100)
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model GoogleBusinessConnection {
+  id                       String                    @id @default(cuid()) @db.VarChar(191)
+  organizationId           String                    @unique @db.VarChar(191)
+  authorizedUserId         String                    @db.VarChar(191)
+  status                   String                    @default("DISCONNECTED") @db.VarChar(40)
+  subjectHash              String?                   @db.Char(64)
+  encryptedRefreshToken    String?                   @db.Text
+  encryptedAccessToken     String?                   @db.Text
+  accessExpiresAt          DateTime?
+  encryptedRevocationToken String?                   @db.Text
+  revision                 Int                       @default(1)
+  errorCode                String?                   @db.VarChar(80)
+  retryAt                  DateTime?
+  connectedAt              DateTime?
+  updatedAt                DateTime                  @updatedAt
+  organization             Organization              @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  authorizedUser           User                      @relation(fields: [authorizedUserId], references: [id], onDelete: Restrict)
+  location                 GoogleBusinessLocation?
+  candidates               GoogleLocationCandidate[]
+}
+
+model GoogleBusinessAttempt {
+  stateHash         String   @id @db.Char(64)
+  organizationId    String   @db.VarChar(191)
+  userId            String   @db.VarChar(191)
+  sessionId         String   @db.VarChar(191)
+  revision          Int
+  encryptedVerifier String   @db.Text
+  nonce             String   @db.VarChar(64)
+  browserHash       String   @db.Char(64)
+  expiresAt         DateTime
+
+  @@index([expiresAt])
+}
+
+model GoogleLocationCandidate {
+  id             String                   @id @default(cuid()) @db.VarChar(191)
+  connectionId   String                   @db.VarChar(191)
+  organizationId String                   @db.VarChar(191)
+  revision       Int
+  accountName    String                   @db.VarChar(191)
+  locationName   String                   @db.VarChar(191)
+  title          String                   @db.VarChar(512)
+  expiresAt      DateTime
+  connection     GoogleBusinessConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, accountName, locationName])
+  @@index([expiresAt])
+}
+
+model GoogleBusinessLocation {
+  id                     String                   @id @default(cuid()) @db.VarChar(191)
+  organizationId         String                   @unique @db.VarChar(191)
+  connectionId           String                   @unique @db.VarChar(191)
+  accountName            String                   @db.VarChar(191)
+  locationName           String                   @db.VarChar(191)
+  title                  String                   @db.VarChar(512)
+  verification           String                   @default("UNKNOWN") @db.VarChar(20)
+  syncStatus             String                   @default("IDLE") @db.VarChar(20)
+  errorCode              String?                  @db.VarChar(80)
+  lastSyncAt             DateTime?
+  lastFullSyncAt         DateTime?
+  lastSyncRequestedAt    DateTime?
+  syncLeaseUntil         DateTime?
+  syncLeaseOwner         String?                  @db.VarChar(64)
+  cacheExpiresAt         DateTime
+  googleTotalReviewCount Int?
+  googleAverageRating    Float?
+  truncated              Boolean                  @default(false)
+  connection             GoogleBusinessConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  reviews                GoogleReviewCache[]
+
+  @@unique([id, organizationId])
+  @@index([cacheExpiresAt])
+}
+
+model GoogleReviewCache {
+  id              String                 @id @default(cuid()) @db.VarChar(191)
+  organizationId  String                 @db.VarChar(191)
+  locationId      String                 @db.VarChar(191)
+  googleReviewId  String                 @db.VarChar(191)
+  content         Json
+  googleUpdatedAt DateTime
+  cachedAt        DateTime
+  expiresAt       DateTime
+  seenRunId       String                 @db.VarChar(64)
+  location        GoogleBusinessLocation @relation(fields: [locationId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([locationId, googleReviewId])
+  @@index([organizationId, expiresAt])
+}

@@ -1,0 +1,437 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:where(.dark, .dark *));
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+  --primary: oklch(0.208 0.042 265.755);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.704 0.04 256.788);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.14 0.04 259.21);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+}
+
+@theme inline {
+  --font-inter: "Segoe UI", sans-serif;
+  --font-manrope: "Segoe UI", sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --background: #f7f9f8;
+  --foreground: #182521;
+  --card: #fff;
+  --card-foreground: #182521;
+  --primary: #12654f;
+  --primary-foreground: #fff;
+  --muted: #edf2ef;
+  --muted-foreground: #58685f;
+  --accent: #e8f3ee;
+  --accent-foreground: #115d47;
+  --border: #e1e7e3;
+  --input: #d6dfd9;
+  --ring: #438e75;
+}
+.dark {
+  --background: #111a17;
+  --foreground: #e7eee9;
+  --card: #18241f;
+  --card-foreground: #e7eee9;
+  --primary: #8bd7b6;
+  --primary-foreground: #10271c;
+  --muted: #23342b;
+  --muted-foreground: #a6b8ac;
+  --accent: #253b30;
+  --accent-foreground: #a8e5c9;
+  --border: #304238;
+  --input: #3c5043;
+  --ring: #83c7a7;
+}
+* {
+  border-color: var(--border);
+}
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    "Segoe UI",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  font-size: 14px;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(:disabled),
+a {
+  cursor: pointer;
+}
+a,
+button,
+input,
+select,
+textarea {
+  outline-offset: 4px;
+}
+::selection {
+  background: #b8e4ce;
+  color: #133b28;
+}
+.dark-only {
+  display: none;
+}
+.dark .dark-only {
+  display: block;
+}
+.dark .light-only {
+  display: none;
+}
+.page-enter {
+  animation: page-enter 240ms ease-out;
+}
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Public product site: warm, editorial, and continuous with the dashboard. */
+.marketing-site {
+  --market-warm: #f5f3e9;
+  background: var(--background);
+}
+.market-wrap {
+  width: min(1160px, calc(100% - 48px));
+  margin-inline: auto;
+}
+.market-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+.market-nav-link {
+  color: var(--muted-foreground);
+  transition: color 0.15s;
+}
+.market-nav-link:hover,
+.market-nav-link[aria-current="page"] {
+  color: var(--primary);
+}
+.market-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  gap: 64px;
+  padding-block: 88px 72px;
+}
+.market-eyebrow {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+.market-hero h1 {
+  font-size: clamp(40px, 4.4vw, 62px);
+  line-height: 1.08;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  margin: 0;
+}
+.market-highlight {
+  color: var(--primary);
+}
+.market-lede {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--muted-foreground);
+  margin-top: 24px;
+  max-width: 470px;
+}
+.market-hero-visual {
+  position: relative;
+  min-width: 0;
+}
+.market-hero-visual:before {
+  content: "";
+  position: absolute;
+  inset: 30px -16px -16px 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--market-warm);
+  z-index: 0;
+  transform: rotate(2deg);
+}
+.market-product {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 20px 50px -35px #203d2e55;
+  z-index: 1;
+}
+.market-preview-note {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 30px 0 0 20px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  z-index: 1;
+}
+.market-preview-note > span {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.market-availability {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+.market-availability > span {
+  margin-top: 6px;
+}
+.market-availability strong {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.market-section {
+  padding-block: 88px;
+}
+.market-h2 {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.market-feature-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 20px;
+  padding-block: 25px;
+  border-top: 1px solid var(--border);
+}
+.market-feature-row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.market-feature-row:last-child {
+  padding-bottom: 0;
+}
+.market-band {
+  background: var(--market-warm);
+  border-block: 1px solid var(--border);
+}
+.market-price-inline {
+  border-left: 1px solid #d9ddcf;
+  padding: 8px 0 8px 50px;
+}
+.market-footer {
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+.market-footer a {
+  transition: color 0.15s;
+}
+.market-footer a:hover {
+  color: var(--primary);
+}
+.market-page-title {
+  font-size: clamp(35px, 4.4vw, 56px);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  max-width: 850px;
+}
+.market-faq summary {
+  list-style: none;
+}
+.market-faq summary::-webkit-details-marker {
+  display: none;
+}
+.market-faq[open] summary svg {
+  transform: rotate(90deg);
+}
+.market-textarea {
+  display: block;
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid var(--input);
+  border-radius: 6px;
+  background: var(--card);
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+}
+.market-textarea:focus-visible {
+  outline: 2px solid var(--ring);
+}
+.dark .marketing-site {
+  --market-warm: #1c2b23;
+}
+.dark .market-price-inline {
+  border-color: var(--border);
+}
+@media (max-width: 1023px) {
+  .market-hero {
+    gap: 32px;
+    padding-top: 60px;
+  }
+  .market-hero h1 {
+    font-size: 46px;
+  }
+}
+@media (max-width: 767px) {
+  .market-wrap {
+    width: calc(100% - 36px);
+  }
+  .market-hero {
+    grid-template-columns: 1fr;
+    gap: 42px;
+    padding-block: 46px;
+  }
+  .market-hero h1 {
+    font-size: 44px;
+  }
+  .market-lede {
+    font-size: 15px;
+  }
+  .market-section {
+    padding-block: 56px;
+  }
+  .market-price-inline {
+    padding: 25px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+  .market-hero-visual:before {
+    inset: 20px -6px -12px 15px;
+    transform: rotate(1.3deg);
+  }
+  .market-preview-note {
+    margin-left: 0;
+  }
+  .market-feature-row {
+    gap: 12px;
+  }
+}
+@media (max-width: 374px) {
+  .market-hero h1 {
+    font-size: 38px;
+  }
+}

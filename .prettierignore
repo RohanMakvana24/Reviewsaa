@@ -1,0 +1,6 @@
+package-lock.json
+template/
+docs/
+.next/
+dist/
+node_modules/
